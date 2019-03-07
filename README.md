@@ -1,0 +1,1 @@
+# A simple Go client application for fetching open issues of any Github repository
