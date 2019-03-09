@@ -1,13 +1,14 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"fmt"
 
-	"github.com/radius_agents_assignment/github_project_issues/router"
+	"github.com/radius_agents_assignment/github_project_issues/service"
 )
 
+var appName = "github_issues_service"
+
 func main() {
-	router := router.NewRouter()
-	log.Fatal(http.ListenAndServe(":8080", router))
+	fmt.Printf("Starting %s\n", appName)
+	service.StartWebServer("8080")
 }

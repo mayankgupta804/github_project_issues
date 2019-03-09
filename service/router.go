@@ -1,15 +1,14 @@
-package router
+package service
 
 import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/radius_agents_assignment/github_project_issues/routes"
 )
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	for _, route := range routes.Routes {
+	for _, route := range routes {
 		var handler http.Handler
 
 		handler = route.HandlerFunc

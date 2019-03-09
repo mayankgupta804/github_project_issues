@@ -2,15 +2,13 @@ package service
 
 import (
 	"context"
-	"log"
-	"net/http"
 	"time"
 
 	"github.com/google/go-github/github"
 )
 
 // repoIssuesCounter counts issues in a repository
-func repoIssuesCounter(ctx context.Context, client *github.Client, owner string, repoName string, daysAgo int) int {
+func repoIssuesCounter(ctx context.Context, client *github.Client, owner string, repoName string, daysAgo int) (int, error) {
 	options := getIssueListByRepoOptions(daysAgo) // get options for querying data from github issues API
 
 	var issuesCount, nextPage = 0, 0
@@ -24,15 +22,11 @@ func repoIssuesCounter(ctx context.Context, client *github.Client, owner string,
 		issuesCount += len(issues)
 
 		if nextPage == 0 {
-			return issuesCount // in case there are no further paginated results, return the final count
+			return issuesCount, nil // in case there are no further paginated results, return the final count
 		}
 
 		if err != nil {
-			log.Fatalf("Error Encountered: %v", err)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			log.Println("Couldn't get the list of open issues. Please try again after some time.")
+			return 0, err
 		}
 
 		options.Page = nextPage // set the index of the next page of results in options

@@ -1,9 +1,7 @@
-package routes
+package service
 
 import (
 	"net/http"
-
-	"github.com/radius_agents_assignment/github_project_issues/handlers"
 )
 
 type Route struct {
@@ -13,19 +11,19 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
-type routes []Route
+type Routes []Route
 
-var Routes = routes{
+var routes = Routes{
 	Route{
 		"Index",
 		http.MethodGet,
 		"/",
-		handlers.Index,
+		Index,
 	},
 	Route{
 		"Issues",
 		http.MethodGet,
-		"/issues",
-		handlers.GithubIssues,
+		"/issues/{owner}/{repoName}",
+		GithubIssues,
 	},
 }
