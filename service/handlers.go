@@ -3,6 +3,8 @@ package service
 import (
 	"html/template"
 	"net/http"
+
+	"github.com/radius_agents_assignment/github_project_issues/domain"
 )
 
 // Index renders a page with an HTML form for entering the repository name and owner/organisation name
@@ -28,14 +30,6 @@ func GithubIssues(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	tmpl := template.Must(template.ParseFiles("templates/layout.html"))
-	issuesData := IssuesData{Owner: owner, Repository: repoName, Issues: issuesMap}
+	issuesData := domain.IssuesData{Owner: owner, Repository: repoName, Issues: issuesMap}
 	tmpl.Execute(w, issuesData)
-}
-
-// IssuesData is structure for storing data about the issues of a Github repository and
-// It is being used for the purpose of displaying the data in layout.html
-type IssuesData struct {
-	Owner      string
-	Repository string
-	Issues     map[string]int
 }

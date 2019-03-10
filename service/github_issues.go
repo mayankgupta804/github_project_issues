@@ -2,7 +2,7 @@ package service
 
 import client "github.com/radius_agents_assignment/github_project_issues/githubclient"
 
-// GetGithubIssues returns a JSON object with information related to total open issues,
+// GetGithubIssues returns a map object and error (if any) with information related to total open issues,
 // issues opened in last 24 hours, issues opened more than 7 days ago and
 // issues opened more than 24 hours ago but less than 7 days ago for a given repository
 func GetGithubIssues(owner string, repoName string) (map[string]int, error) {
