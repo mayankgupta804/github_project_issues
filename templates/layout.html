@@ -1,0 +1,14 @@
+<html>
+<h2>Owner: {{.Owner}}</h2>
+<h2>Repository: {{.Repository}}</h2>
+<hr>
+<table border="1">
+    {{ range $key, $value := .Issues }}
+        <tr>
+            <td><i>{{ $key }}</i></td>
+            <td>{{ $value }}</td>
+        </tr>
+        <br>
+     {{ end }}
+</table>   
+</html>
