@@ -24,6 +24,10 @@
 #   go-tests = true
 #   unused-packages = true
 
+[metadata.heroku]
+  root-package = "github.com/radius_agents_assignment/github_project_issues"
+  ensure = false
+  install = ["."]
 
 [[constraint]]
   name = "github.com/google/go-github"
