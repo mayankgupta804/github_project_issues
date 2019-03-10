@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// Route defines a structure for defining API routes
 type Route struct {
 	Name        string
 	Method      string
@@ -11,6 +12,8 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
+// Routes stores a slice of routes which is used when
+// when an instance of NewRouter is called to initialize the routes
 type Routes []Route
 
 var routes = Routes{
@@ -23,7 +26,7 @@ var routes = Routes{
 	Route{
 		"Issues",
 		http.MethodGet,
-		"/issues/{owner}/{repoName}",
+		"/issues",
 		GithubIssues,
 	},
 }

@@ -8,29 +8,18 @@ import client "github.com/radius_agents_assignment/github_project_issues/githubc
 func GetGithubIssues(owner string, repoName string) (map[string]int, error) {
 	client, ctx := client.GithubClientContext()
 
-	totalOpenIssues, err := repoIssuesCounter(ctx, client, owner, repoName, today)
-	if err != nil {
-		return make(map[string]int), err
-	}
-
-	issuesLast24Hours, err := repoIssuesCounter(ctx, client, owner, repoName, oneDayAgo)
-	if err != nil {
-		return make(map[string]int), err
-	}
-
-	issuesLast7Days, err := repoIssuesCounter(ctx, client, owner, repoName, sevenDaysAgo)
-	if err != nil {
-		return make(map[string]int), err
-	}
+	totalOpenIssues, _ := repoIssuesCounter(ctx, client, owner, repoName, today)
+	issuesLast24Hours, _ := repoIssuesCounter(ctx, client, owner, repoName, oneDayAgo)
+	issuesLast7Days, _ := repoIssuesCounter(ctx, client, owner, repoName, sevenDaysAgo)
 
 	issuesMoreThan7Days := totalOpenIssues - issuesLast7Days
 	issuesMoreThan24HoursLessThan7Days := issuesLast7Days - issuesLast24Hours
 
 	issuesMap := make(map[string]int)
-	issuesMap["totalOpenIssues"] = totalOpenIssues
-	issuesMap["issuesLast24Hours"] = issuesLast24Hours
-	issuesMap["issuesMoreThan7DaysAgo"] = issuesMoreThan7Days
-	issuesMap["issuesMoreThan24HoursLessThan7Days"] = issuesMoreThan24HoursLessThan7Days
+	issuesMap["Total Open Issues"] = totalOpenIssues
+	issuesMap["Issues Opened in Last 24 Hours"] = issuesLast24Hours
+	issuesMap["Issues Opened More Than 7 Days Ago"] = issuesMoreThan7Days
+	issuesMap["Issues Opened More Than 24Hours Ago But Less Than 7 Days Ago"] = issuesMoreThan24HoursLessThan7Days
 
 	return issuesMap, nil
 }
