@@ -18,15 +18,15 @@ func repoIssuesCounter(ctx context.Context, client *github.Client, owner string,
 
 	for {
 		issues, resp, err = client.Issues.ListByRepo(ctx, owner, repoName, options)
+		if err != nil {
+			return 0, err
+		}
 		nextPage = resp.NextPage // store the index of next page in case of paginated results
+		issues = filterIssues(issues)
 		issuesCount += len(issues)
 
 		if nextPage == 0 {
 			return issuesCount, nil // in case there are no further paginated results, return the final count
-		}
-
-		if err != nil {
-			return 0, err
 		}
 
 		options.Page = nextPage // set the index of the next page of results in options
@@ -43,4 +43,14 @@ func getIssueListByRepoOptions(daysAgo int) *github.IssueListByRepoOptions {
 		options.Since = sinceTime
 	}
 	return options
+}
+
+func filterIssues(issues []*github.Issue) []*github.Issue {
+	var filteredIssues []*github.Issue
+	for _, v := range issues {
+		if !v.IsPullRequest() {
+			filteredIssues = append(filteredIssues, v)
+		}
+	}
+	return filteredIssues
 }
