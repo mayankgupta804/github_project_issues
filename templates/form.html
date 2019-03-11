@@ -1,7 +1,18 @@
 <h1>Github Issues Viewer</h1>
 <form method="GET" action="/issues">
+  Username: <input type="text" name="username"></input>
+  Password: <input type="password" name="password"></input>
   <p>Enter link to the Github Repository:</p>
   <input type="text" name="repository_link"><br>
   <br>
   <button type="submit"> Go </button>
+
+  <p>
+    <i>
+    For repositories with very high number of issues, it will be an issue(pun intended) to fetch the data properly. 
+    This is due to the rate limits that Github imposes on its APIs. So, in case of paginated results, 
+    the number of fired requests would cross the rate limits thereby throwing an error. For this reason, it is advisable 
+    to provide your github username and password. Your details are not being stored, so no need to worry.
+    </i>
+  </p>
 </form>
