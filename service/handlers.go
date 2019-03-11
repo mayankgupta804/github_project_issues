@@ -3,6 +3,7 @@ package service
 import (
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/radius_agents_assignment/github_project_issues/domain"
 )
@@ -16,9 +17,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 // GithubIssues renders the page with the relevant information about the issues related to a
 // specific repository
 func GithubIssues(w http.ResponseWriter, r *http.Request) {
-	owner := r.FormValue("owner")
-	repoName := r.FormValue("repoName")
-
+	repositoryLink := strings.Split(r.FormValue("repository_link"), "/")
+	owner := repositoryLink[len(repositoryLink)-2]
+	repoName := repositoryLink[len(repositoryLink)-1]
 	issuesMap, err := GetGithubIssues(owner, repoName)
 
 	if err != nil || issuesMap["Total Open Issues"] == 0 {
