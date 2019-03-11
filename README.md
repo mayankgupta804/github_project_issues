@@ -27,13 +27,13 @@ The UI displays the following data in a table format when the _owner/organizatio
 * As mentioned, I am using _go-github_ library which does the excellent job of providing a higher level API to access the Github V3 API. 
 * Initially, I created a _github client_ object using the structures provided by the _go-github_ package. I used this client and a simple empty _background context_ as a way to access the _issues_ API.
 * Next, I passed in various options related to the _features_ discussed above to fetch the required information about a particular _repository_ owned by any _user_.
-* After that, I created two routes, one for the _index_ page where a form with two input fields, namely _owner_ and _repository_, is displayed.
+* After that, I created two routes, one for the _index_ page where a form with two input fields, namely _owner_ and _repository_, and another for fetching the actual data about the *issues*.
 * When the relevant information is entered, for example, owner as _smartystreets_ and repository as _goconvey_, the form data is then directed to a _/issues_ API which does the job of calling the actual Github API for fetching the information about the repository.
 
 ### Areas of Improvement
 
 * Since I am using a simple github client context, I am only entitled to a certain number of API calls in a given period of time. If the number of calls to the Github API is more than the intended number, we will not get any response because of _rate limits_ on the API.
-* To mitigate, the situtation above is to authenticate the client every time an API call is made.
+* To mitigate above situtation above,the client needs to be authenticated every time an API call is made.
 * However, even with a simple client context, we can make more number of calls in a given period of time, provided we using _caching_ mechanism for storing information that we know wouldn't change in the next couple of days, like we can store the information about _issues opened more than 7 days ago_ in _redis_ cache and put a timeout for clearing the cache every 7 days.
 * I did not particular follow TDD which I should have, but intend to write tests for all the functionalities given more time.
 * Also the UI is pretty basic and not very intuitive.
