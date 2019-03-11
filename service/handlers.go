@@ -20,9 +20,9 @@ func GithubIssues(w http.ResponseWriter, r *http.Request) {
 	repositoryLink := strings.Split(r.FormValue("repository_link"), "/")
 	owner := repositoryLink[len(repositoryLink)-2]
 	repoName := repositoryLink[len(repositoryLink)-1]
-	issuesMap, err := GetGithubIssues(owner, repoName)
+	issuesMap := GetGithubIssues(owner, repoName)
 
-	if err != nil || issuesMap["Total Open Issues"] == 0 {
+	if issuesMap["Total Open Issues"] == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		tmpl := template.Must(template.ParseFiles("templates/error.html"))
 		tmpl.Execute(w, nil)
