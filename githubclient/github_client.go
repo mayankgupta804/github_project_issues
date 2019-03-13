@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"log"
 	"os"
 
 	"github.com/google/go-github/github"
@@ -14,11 +13,11 @@ func GithubClientContext() (*github.Client, context.Context) {
 	ctx := context.Background()
 	var client *github.Client
 
-	if os.Getenv("GITHUB_ACCESS_TOKEN") == "" { // If personal access token is not present, use basic client
-		log.Println("Github personal access token is not set. Please set it.")
-		client = github.NewClient(nil)
-		return client, ctx
-	}
+	// if os.Getenv("GITHUB_ACCESS_TOKEN") == "" { // If personal access token is not present, use basic client
+	// 	log.Println("Github personal access token is not set. Please set it.")
+	// 	client = github.NewClient(nil)
+	// 	return client, ctx
+	// }
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
