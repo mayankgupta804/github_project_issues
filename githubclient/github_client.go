@@ -2,38 +2,30 @@ package client
 
 import (
 	"context"
-	"strings"
+	"log"
+	"os"
 
 	"github.com/google/go-github/github"
+	"golang.org/x/oauth2"
 )
 
 // GithubClientContext provides a client and background context to use the Github API
-func GithubClientContext(username string, password string) (*github.Client, context.Context) {
-	if username == "" || password == "" {
-		client, ctx := createEmptyBackGroundContext()
+func GithubClientContext() (*github.Client, context.Context) {
+	ctx := context.Background()
+	var client *github.Client
+
+	if os.Getenv("GITHUB_ACCESS_TOKEN") == "" { // If personal access token is not present, use basic client
+		log.Println("Github personal access token is not set. Please set it.")
+		client = github.NewClient(nil)
 		return client, ctx
 	}
 
-	// Create transport for authentication
-	tp := github.BasicAuthTransport{
-		Username: strings.TrimSpace(username),
-		Password: strings.TrimSpace(password),
-	}
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: os.Getenv("GITHUB_ACCESS_TOKEN")},
+	)
 
-	client := github.NewClient(tp.Client())
-	ctx := context.Background()
-	user, resp, err := client.Users.Get(ctx, "")
+	tc := oauth2.NewClient(ctx, ts)
 
-	// If authentication fails, use an empty background context
-	if err != nil || user == nil || resp.StatusCode == 401 {
-		client, ctx := createEmptyBackGroundContext()
-		return client, ctx
-	}
-	return client, ctx
-}
-
-func createEmptyBackGroundContext() (*github.Client, context.Context) {
-	client := github.NewClient(nil)
-	ctx := context.Background()
+	client = github.NewClient(tc)
 	return client, ctx
 }

@@ -18,11 +18,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 // specific repository
 func GithubIssues(w http.ResponseWriter, r *http.Request) {
 	repositoryLink := strings.Split(r.FormValue("repository_link"), "/")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
 	owner := repositoryLink[len(repositoryLink)-2]
 	repoName := repositoryLink[len(repositoryLink)-1]
-	issuesMap := GetGithubIssues(username, password, owner, repoName)
+	issuesMap := GetGithubIssues(owner, repoName)
 
 	if issuesMap["Total Open Issues"] == 0 {
 		w.WriteHeader(http.StatusNotFound)
