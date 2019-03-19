@@ -7,3 +7,10 @@ type IssuesData struct {
 	Repository string
 	Issues     map[string]int
 }
+
+// IssuesCount is a structure for holding data related to the issue
+// being queried for by the API
+type IssuesCount struct {
+	Data  string
+	Count int
+}

@@ -27,6 +27,18 @@ var routes = Routes{
 		"Issues",
 		http.MethodGet,
 		"/issues",
-		GithubIssues,
+		GetGithubIssues,
+	},
+	Route{
+		"Status",
+		http.MethodGet,
+		"/status",
+		CheckStatus,
+	},
+	Route{
+		"IssuesData",
+		http.MethodGet,
+		"/issues/data",
+		DisplayGithubIssues,
 	},
 }

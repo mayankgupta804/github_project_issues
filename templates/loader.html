@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  position:fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -100px; 
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+h2.headertext {
+  margin-top: 300px;
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+<h2 class="headertext">Please wait while we are crunching the latest data...</h2>
+
+<div class="loader"></div>
+
+</body>
+</html>
+
+<script>
+  var sleep = time => new Promise(resolve => setTimeout(resolve, time))
+  var poll = (promiseFn, time) => promiseFn().then(
+              sleep(time).then(() => poll(promiseFn, time)))
+
+  // Greet the World every second
+  poll(() => new Promise(() => console.log('Hello World!')), 30000)
+</script>
