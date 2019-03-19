@@ -35,9 +35,9 @@ func GetGithubIssues(w http.ResponseWriter, r *http.Request) {
 // CheckStatus returns the status of the background job of fetching the issues related to a repository
 func CheckStatus(w http.ResponseWriter, r *http.Request) {
 	status := statusChecker()
-	var mapStatus map[string]string
+	mapStatus := make(map[string]string)
 	if !status {
-		mapStatus = map[string]string{"status": "incomplete"}
+		mapStatus["status"] = "incomplete"
 		json.NewEncoder(w).Encode(mapStatus)
 		return
 	}

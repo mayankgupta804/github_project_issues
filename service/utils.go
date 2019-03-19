@@ -19,8 +19,14 @@ func statusChecker() bool {
 		panic(err)
 	}
 	defer close()
+	data := make(map[string]int)
+	for d := range msgs {
 
-	if len(msgs) > 0 {
+		err = json.Unmarshal(d.Body, &data)
+
+		if err != nil {
+			log.Fatalf("Error encountered: %s", err)
+		}
 		return true
 	}
 	return false
