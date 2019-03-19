@@ -1,20 +1,32 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
+	"github.com/radius_agents_assignment/github_project_issues/queue"
 	"github.com/radius_agents_assignment/github_project_issues/service"
+	"github.com/radius_agents_assignment/github_project_issues/worker"
 )
 
 var appName = "github_issues_service"
 
 func main() {
-	fmt.Printf("Starting %s\n", appName)
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("$PORT must be set")
+	rabbitMQHostAddress := os.Getenv("RABBITMQ_HOST_ADDRESS")
+	if rabbitMQHostAddress == "" {
+		log.Fatal("$RABBITMQ_HOST_ADDRESS must be set")
 	}
-	service.StartWebServer(port)
+	queue.Init(rabbitMQHostAddress)
+
+	if os.Args[1] == "worker" {
+		log.Println("Starting worker...")
+		worker.StartWorker()
+	} else {
+		port := os.Getenv("PORT")
+		if port == "" {
+			log.Fatal("$PORT must be set")
+		}
+		log.Printf("Starting %s...\n", appName)
+		service.StartWebServer(port)
+	}
 }
