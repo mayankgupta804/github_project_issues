@@ -1,16 +1,8 @@
 package domain
 
-// IssuesData is structure for storing data about the issues of a Github repository and
-// It is being used for the purpose of displaying the data in layout.html
+// IssuesData is a structure for storing data of a Github repository and the relevant issues
 type IssuesData struct {
 	Owner      string
 	Repository string
 	Issues     map[string]int
-}
-
-// IssuesCount is a structure for holding data related to the issue
-// being queried for by the API
-type IssuesCount struct {
-	Data  string
-	Count int
 }

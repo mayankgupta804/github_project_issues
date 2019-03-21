@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/radius_agents_assignment/github_project_issues/domain"
 	"github.com/radius_agents_assignment/github_project_issues/queue"
 )
 
@@ -15,44 +16,53 @@ func publisher(repoinfo []byte) {
 
 func statusChecker() bool {
 	msgs, close, err := queue.Subscribe("github_service_consume_queue")
+
 	if err != nil {
 		panic(err)
 	}
 	defer close()
-	data := make(map[string]int)
+
+	data := domain.IssuesData{}
+
 	for d := range msgs {
 
 		err = json.Unmarshal(d.Body, &data)
 
 		if err != nil {
-			log.Fatalf("Error encountered: %s", err)
+			log.Printf("Error converting JSON object: %v", err)
+			return false
 		}
 		return true
 	}
 	return false
 }
 
-func subscriber() map[string]int {
+func subscriber() *domain.IssuesData {
+	// Subscribe to the queue where the worker publishes the result
 	msgs, close, err := queue.Subscribe("github_service_consume_queue")
 	if err != nil {
 		panic(err)
 	}
-	// Close the channel when the worker is stopped
+	// Close the channel after getting the results
 	defer close()
-	var data map[string]int
+
+	data := domain.IssuesData{}
 
 	for d := range msgs {
 
 		err = json.Unmarshal(d.Body, &data)
 
 		if err != nil {
-			log.Fatalf("Error encountered: %s", err)
+			data.Issues = map[string]int{"Total Open Issues": 0}
+			return &data
 		}
 
 		// Acknowledge the message so that it is cleared from the queue
 		d.Ack(true)
 
-		return data
+		return &data
 	}
-	return map[string]int{"Total Open Issues": 0}
+	// If not messages are present, send a partially empty struct with Issues map
+	data.Issues = map[string]int{"Total Open Issues": 0}
+	return &data
 }
