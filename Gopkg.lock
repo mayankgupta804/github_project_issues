@@ -35,6 +35,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:d6bb6f3240a488ffe5bb6952b513569d009927dcb20ff94885f87b76cef2b698"
+  name = "github.com/streadway/amqp"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "14f78b41ce6da3d698c2ef2cc8c0ea7ce9e26688"
+
+[[projects]]
+  branch = "master"
   digest = "1:f8b491a7c25030a895a0e579742d07136e6958e77ef2d46e769db8eec4e58fcd"
   name = "golang.org/x/net"
   packages = [
@@ -77,6 +85,7 @@
   input-imports = [
     "github.com/google/go-github/github",
     "github.com/gorilla/mux",
+    "github.com/streadway/amqp",
     "golang.org/x/oauth2",
   ]
   solver-name = "gps-cdcl"
