@@ -47,9 +47,7 @@ func CheckStatus(w http.ResponseWriter, r *http.Request) {
 
 // DisplayGithubIssues displays a page with the data about the issues
 func DisplayGithubIssues(w http.ResponseWriter, r *http.Request) {
-	data := make(chan map[string]int)
-	go subscriber(data)
-	issuesMap := <-data
+	issuesMap := subscriber()
 	log.Printf("Received Data: %v", issuesMap)
 
 	if issuesMap["Total Open Issues"] == 0 {

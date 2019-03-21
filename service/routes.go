@@ -32,11 +32,11 @@ var routes = Routes{
 	Route{
 		"Status",
 		http.MethodGet,
-		"/status",
+		"/issues/status",
 		CheckStatus,
 	},
 	Route{
-		"IssuesData",
+		"Data",
 		http.MethodGet,
 		"/issues/data",
 		DisplayGithubIssues,
