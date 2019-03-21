@@ -9,7 +9,6 @@ import (
 func StartWebServer(port string) {
 	router := NewRouter()
 	http.Handle("/", router)
-	http.Handle("/issues", router)
 	log.Println("Starting HTTP service at port:", port)
 	err := http.ListenAndServe(":"+port, nil)
 

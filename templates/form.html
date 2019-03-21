@@ -1,7 +1,20 @@
-<h1>Github Issues Viewer</h1>
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Walter+Turncoat' rel='stylesheet' type='text/css'>
+    <style>
+        h1.header {
+            font-family: 'Walter Turncoat', cursive;
+            font-size: 20px;
+        }
+        .para {
+            font-family: 'Walter Turncoat', cursive;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<h1 class="header">Github Issues Viewer</h1>
 <form method="GET" action="/issues">
-  <p>Enter link to the Github Repository:</p>
+  <p class="para">Enter link to the Github Repository:</p>
   <input type="text" name="repository_link"><br>
   <br>
-  <button type="submit"> Go </button>
+  <button type="submit" class="para"> Go </button>
 </form>

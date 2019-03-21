@@ -1,27 +1,38 @@
 <head>
-        <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
-        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
-</head>
-    
-<h2>Owner: {{.Owner}}</h2>
-<h2>Repository: {{.Repository}}</h2>
+    <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
+    <link href='https://fonts.googleapis.com/css?family=Walter+Turncoat' rel='stylesheet' type='text/css'>
+    <style>
+        h2.header {
+            font-family: 'Walter Turncoat', cursive;
+            font-size: 20px;
+        }
+        .fancy {
+            font-family: 'Walter Turncoat', cursive;
+            font-size: 15px;
+        }   
+    </style> 
+</head> 
+  
+<h2 class="header">Owner: {{.Owner}}</h2>
+<h2 class="header">Repository: {{.Repository}}</h2>
+<a href="/" class="fancy">Click here to go back!</a>
 <hr>
 <table id="github" class="display" cellspacing="0" width="100%">
     <col width="35%">
     <col width="65%">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Counts</th>
+            <th class="fancy">Title</th>
+            <th class="fancy">Counts</th>
         </tr>
     </thead>
     <tbody>
-
         {{ range $key, $value := .Issues }}
-            <tr>
-                <td><i>{{ $key }}</i></td>
-                <td>{{ $value }}</td>
+        <tr>
+            <td class="fancy"><i>{{ $key }}</i></td>
+            <td class="fancy">{{ $value }}</td>
         </tr>
         {{ end }}
     </tbody>
