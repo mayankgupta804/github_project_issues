@@ -32,7 +32,7 @@ func statusChecker() bool {
 	return false
 }
 
-func subscriber(recvData chan<- map[string]int) {
+func subscriber() map[string]int {
 	msgs, close, err := queue.Subscribe("github_service_consume_queue")
 	if err != nil {
 		panic(err)
@@ -46,14 +46,13 @@ func subscriber(recvData chan<- map[string]int) {
 		err = json.Unmarshal(d.Body, &data)
 
 		if err != nil {
-			recvData <- map[string]int{"Total Open Issues": 0}
 			log.Fatalf("Error encountered: %s", err)
 		}
 
 		// Acknowledge the message so that it is cleared from the queue
 		d.Ack(true)
 
-		recvData <- data
+		return data
 	}
-	recvData <- map[string]int{"Total Open Issues": 0}
+	return map[string]int{"Total Open Issues": 0}
 }
