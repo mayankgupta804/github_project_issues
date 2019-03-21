@@ -12,7 +12,7 @@ import (
 var appName = "github_issues_service"
 
 func main() {
-	rabbitMQHostAddress := os.Getenv("RABBITMQ_HOST_ADDRESS")
+	rabbitMQHostAddress := os.Getenv("CLOUDAMQP_URL")
 	if rabbitMQHostAddress == "" {
 		log.Fatal("$RABBITMQ_HOST_ADDRESS must be set")
 	}
