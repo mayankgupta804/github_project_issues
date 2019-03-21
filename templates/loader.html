@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/async/2.6.2/async.js"></script>
 <style>
 .loader {
   border: 16px solid #f3f3f3;
@@ -46,10 +47,12 @@ h2.headertext {
 </html>
 
 <script>
-  var sleep = time => new Promise(resolve => setTimeout(resolve, time))
-  var poll = (promiseFn, time) => promiseFn().then(
-              sleep(time).then(() => poll(promiseFn, time)))
-
-  // Greet the World every second
-  poll(() => new Promise(() => console.log('Hello World!')), 30000)
+  setTimeout(async function fetchStatus() {
+    const res = await fetch('/issues/status')
+    const data = await res.json()
+    if (data.status == 'complete') {
+      window.location.replace("/issues/data")
+    }
+    setTimeout(fetchStatus, 2000)
+  }, 2000)
 </script>
