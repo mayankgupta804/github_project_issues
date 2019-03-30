@@ -41,9 +41,9 @@ func getIssuesData(owner string, repository string) *domain.IssuesData {
 }
 
 func GetRedisConnection() *redisclient.RedisClient {
-	redisHostURL := os.Getenv("REDIS_HOST")
+	redisHostURL := os.Getenv("REDIS_URL")
 	if redisHostURL == "" {
-		log.Fatal("$REDIS_HOST must be set")
+		log.Fatal("$REDIS_URL must be set")
 	}
 	redisClient := redisclient.RedisClient{}
 	redisClient.Init(redisHostURL)
