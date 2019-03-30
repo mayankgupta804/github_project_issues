@@ -3,9 +3,11 @@ package service
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/radius_agents_assignment/github_project_issues/domain"
 	"github.com/radius_agents_assignment/github_project_issues/queue"
+	"github.com/radius_agents_assignment/github_project_issues/redisclient"
 )
 
 func publisher(repoinfo []byte) {
@@ -14,55 +16,36 @@ func publisher(repoinfo []byte) {
 	}
 }
 
-func statusChecker() bool {
-	msgs, close, err := queue.Subscribe("github_service_consume_queue")
-
+func statusChecker(owner string, repository string) bool {
+	rc := GetRedisConnection()
+	data, err := rc.Get(owner + repository)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error encountered while getting data from redis: %v", err)
 	}
-	defer close()
-
-	data := domain.IssuesData{}
-
-	for d := range msgs {
-
-		err = json.Unmarshal(d.Body, &data)
-
-		if err != nil {
-			log.Printf("Error converting JSON object: %v", err)
-			return false
-		}
-		return true
+	issuesData := domain.IssuesData{}
+	if err = json.Unmarshal([]byte(data), &issuesData); err != nil {
+		return false
 	}
-	return false
+	return true
 }
 
-func subscriber() *domain.IssuesData {
-	// Subscribe to the queue where the worker publishes the result
-	msgs, close, err := queue.Subscribe("github_service_consume_queue")
-	if err != nil {
-		panic(err)
+func getIssuesData(owner string, repository string) *domain.IssuesData {
+	rc := GetRedisConnection()
+	data, err := rc.Get(owner + repository)
+	issuesData := domain.IssuesData{}
+	if err = json.Unmarshal([]byte(data), &issuesData); err != nil {
+		issuesData.Issues["Total Open Issues"] = 0
+		return &issuesData
 	}
-	// Close the channel after getting the results
-	defer close()
+	return &issuesData
+}
 
-	data := domain.IssuesData{}
-
-	for d := range msgs {
-
-		err = json.Unmarshal(d.Body, &data)
-
-		if err != nil {
-			data.Issues = map[string]int{"Total Open Issues": 0}
-			return &data
-		}
-
-		// Acknowledge the message so that it is cleared from the queue
-		d.Ack(true)
-
-		return &data
+func GetRedisConnection() *redisclient.RedisClient {
+	redisHostURL := os.Getenv("REDIS_HOST")
+	if redisHostURL == "" {
+		log.Fatal("$REDIS_HOST must be set")
 	}
-	// If not messages are present, send a partially empty struct with Issues map
-	data.Issues = map[string]int{"Total Open Issues": 0}
-	return &data
+	redisClient := redisclient.RedisClient{}
+	redisClient.Init(redisHostURL)
+	return &redisClient
 }

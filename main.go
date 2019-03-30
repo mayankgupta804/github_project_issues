@@ -21,7 +21,7 @@ func main() {
 	if os.Args[1] == "worker" {
 		log.Println("Starting worker...")
 		worker.StartWorker()
-	} else {
+	} else if os.Args[1] == "server" {
 		port := os.Getenv("PORT")
 		if port == "" {
 			log.Fatal("$PORT must be set")

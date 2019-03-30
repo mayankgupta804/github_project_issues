@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/radius_agents_assignment/github_project_issues/domain"
 )
 
 // Index renders a page with an HTML form for entering the repository name and owner/organisation name
@@ -25,19 +27,30 @@ func GetGithubIssues(w http.ResponseWriter, r *http.Request) {
 
 	repoInfo := owner + "," + repoName
 
+	rc := GetRedisConnection()
+
+	rc.Set(owner+repoName, []byte("incomplete"))
 	// Publish the repoInfo to the github_service_queue for processing
 	publisher([]byte(repoInfo))
+
+	info := domain.RepositoryInfo{Owner: owner, Repository: repoName}
 
 	// Set the header as accepted and render the loader template
 	w.WriteHeader(http.StatusAccepted)
 	tmpl := template.Must(template.ParseFiles("templates/loader.html"))
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, info)
 }
 
 // CheckStatus returns the status of completion of the background job
 // which has the responsibility of fetching the issues related to a repository
 func CheckStatus(w http.ResponseWriter, r *http.Request) {
-	status := statusChecker()
+	requestURI := r.RequestURI
+	repositoryLink := strings.Split(requestURI, "/")
+
+	owner := repositoryLink[len(repositoryLink)-2]
+	repoName := repositoryLink[len(repositoryLink)-1]
+
+	status := statusChecker(owner, repoName)
 	mapStatus := make(map[string]string)
 	if !status {
 		mapStatus["status"] = "incomplete"
@@ -50,7 +63,13 @@ func CheckStatus(w http.ResponseWriter, r *http.Request) {
 
 // DisplayGithubIssues renders a page with Github issues data for the relevant owner and repository
 func DisplayGithubIssues(w http.ResponseWriter, r *http.Request) {
-	issuesData := subscriber()
+	requestURI := r.RequestURI
+	repositoryLink := strings.Split(requestURI, "/")
+	owner := repositoryLink[len(repositoryLink)-2]
+	repoName := repositoryLink[len(repositoryLink)-1]
+
+	issuesData := getIssuesData(owner, repoName)
+
 	log.Printf("Received Data: %v", issuesData)
 
 	if issuesData.Issues["Total Open Issues"] == 0 {

@@ -3,6 +3,7 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/async/2.6.2/async.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script> -->
 <link href='https://fonts.googleapis.com/css?family=Walter+Turncoat' rel='stylesheet' type='text/css'>
 <style>
 .loader {
@@ -38,6 +39,14 @@ h2.headertext {
   font-size: 48px;
 }
 
+#owner {
+  visibility: hidden;
+}
+
+#repository {
+  visibility: hidden;
+}
+
 </style>
 </head>
 <body>
@@ -46,16 +55,23 @@ h2.headertext {
 
 <div class="loader"></div>
 
+<p id="owner">{{.Owner}}</p>
+<p id="repository">{{.Repository}}</p>
+
 </body>
 </html>
 
 <script>
+  var owner = document.getElementById("owner").textContent
+  var repository = document.getElementById("repository").textContent
+  console.log(owner, repository);
+  
   setTimeout(async function fetchStatus() {
-    const res = await fetch('/issues/status')
+    const res = await fetch('/issues/status/'+ owner + '/' + repository)
     const data = await res.json()
     if (data.status == 'complete') {
-      window.location.replace("/issues/data")
+      window.location.replace('/issues/data/' + owner + '/' + repository)
     }
-    setTimeout(fetchStatus, 2000)
-  }, 2000)
+    setTimeout(fetchStatus, 5000)
+  }, 5000)
 </script>
