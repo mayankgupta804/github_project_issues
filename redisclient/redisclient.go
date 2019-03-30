@@ -40,7 +40,16 @@ func newPool(server string) *redis.Pool {
 	u, err := url.Parse(server)
 
 	if err != nil {
-		log.Fatalf("Error encountered while creating Redis Pool: %v", err)
+		log.Fatalf("Error encountered: %v", err)
+	}
+
+	if u.User == nil {
+		log.Fatalf("Error encountered: %v", err)
+	}
+
+	pw, ok := u.User.Password()
+	if !ok {
+		log.Fatalf("Error encountered: %v", err)
 	}
 
 	return &redis.Pool{
@@ -50,6 +59,10 @@ func newPool(server string) *redis.Pool {
 
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", u.Host)
+			if err != nil {
+				return nil, err
+			}
+			_, err = c.Do("AUTH", pw)
 			if err != nil {
 				return nil, err
 			}
