@@ -20,6 +20,7 @@ func statusChecker(owner string, repository string) bool {
 	rc := GetRedisConnection()
 	data, err := rc.Get(owner + repository)
 	if err != nil {
+		log.Printf("Error Encountered: %v", err)
 		return false
 	}
 	issuesData := domain.IssuesData{}

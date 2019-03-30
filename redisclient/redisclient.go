@@ -2,6 +2,8 @@ package redisclient
 
 import (
 	"fmt"
+	"log"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -35,13 +37,19 @@ func (rc *RedisClient) cleanupHook() {
 
 func newPool(server string) *redis.Pool {
 
+	u, err := url.Parse(server)
+
+	if err != nil {
+		log.Fatalf("Error encountered while creating Redis Pool: %v", err)
+	}
+
 	return &redis.Pool{
 
 		MaxIdle:     3,
 		IdleTimeout: 240 * time.Second,
 
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", server)
+			c, err := redis.Dial("tcp", u.Host)
 			if err != nil {
 				return nil, err
 			}
@@ -115,36 +123,3 @@ func (rc *RedisClient) Delete(key string) error {
 	_, err := conn.Do("DEL", key)
 	return err
 }
-
-// func GetKeys(pattern string) ([]string, error) {
-
-// 	conn := Pool.Get()
-// 	defer conn.Close()
-
-// 	iter := 0
-// 	keys := []string{}
-// 	for {
-// 		arr, err := redis.Values(conn.Do("SCAN", iter, "MATCH", pattern))
-// 		if err != nil {
-// 			return keys, fmt.Errorf("error retrieving '%s' keys", pattern)
-// 		}
-
-// 		iter, _ = redis.Int(arr[0], nil)
-// 		k, _ := redis.Strings(arr[1], nil)
-// 		keys = append(keys, k...)
-
-// 		if iter == 0 {
-// 			break
-// 		}
-// 	}
-
-// 	return keys, nil
-// }
-
-// func Incr(counterKey string) (int, error) {
-
-// 	conn := Pool.Get()
-// 	defer conn.Close()
-
-// 	return redis.Int(conn.Do("INCR", counterKey))
-// }
