@@ -5,9 +5,13 @@ import (
 	"log"
 	"time"
 
+	"github.com/radius_agents_assignment/github_project_issues/redisclient"
+
 	"github.com/radius_agents_assignment/github_project_issues/queue"
 	"github.com/radius_agents_assignment/github_project_issues/service"
 )
+
+var RedisClient redisclient.RedisClient
 
 // StartWorker starts the Go worker process for making API calls on behalf of the web application
 func StartWorker() {
@@ -20,7 +24,9 @@ func StartWorker() {
 	defer close()
 
 	stop := make(chan bool)
-	var repoInfoDataInBytes []byte
+	var repoInfoDataBytes []byte
+
+	rc := service.GetRedisConnection()
 
 	go func() {
 		// Receive messages from the channel forever
@@ -30,9 +36,11 @@ func StartWorker() {
 
 			log.Println(time.Now().Format("01-02-2006 15:04:05"), "::", repoInfo)
 
-			repoInfoDataInBytes, _ = json.Marshal(repoInfo)
+			repoInfoDataBytes, _ = json.Marshal(repoInfo)
 
-			queue.Publish("github_service_consume_queue", repoInfoDataInBytes)
+			if err := rc.Set(repoInfo.Owner+repoInfo.Repository, repoInfoDataBytes); err != nil {
+				log.Fatalf("Error Encountered while storing data in Redis: %v", err)
+			}
 
 			// Acknowledge the message so that it is cleared from the queue
 			d.Ack(true)
