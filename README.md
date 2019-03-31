@@ -16,7 +16,9 @@ The UI displays the following data in a table format when the _owner/organizatio
 ### Libraries Used
 
 * [gorilla/mux](https://github.com/gorilla/mux) - For routing purposes
-* [google/go-github](https://github.com/google/go-github) - Go Client library for accessing the [Github API V3](https://developer.github.com/v3/)
+* [google/go-github](https://github.com/google/go-github) - Client library for accessing the [Github API V3](https://developer.github.com/v3/)
+* [gomodule/redigo/redis](https://github.com/gomodule/redigo) - Client library for communication with Redis
+* [streadway/amqp](https://github.com/streadway/amqp) - Client library for communication with RabbitMQ
 
 ### Dependency Management
 
@@ -25,22 +27,21 @@ The UI displays the following data in a table format when the _owner/organizatio
 ### Approach towards the Solution
 
 * As mentioned, I am using _go-github_ library which does the excellent job of providing a higher level API to access the Github V3 API. 
-* Initially, I created a _github client_ object using the structures provided by the _go-github_ package. I used this client and a simple empty _background context_ as a way to access the _issues_ API.
+* Initially, I created a _github client_ object using the structures provided by the _go-github_ package. Since the Github API only allows a certain number of unauthenticated API calls, I created a personal auth token which I use to authenticate the client.
 * Next, I passed in various options related to the _features_ discussed above to fetch the required information about a particular _repository_ owned by any _user_.
-* After that, I created two routes, one for the _index_ page where a form with two input fields, namely _owner_ and _repository_, and another for fetching the actual data about the *issues*.
-* When the relevant information is entered, for example, owner as _smartystreets_ and repository as _goconvey_, the form data is then directed to a _/issues_ API which does the job of calling the actual Github API for fetching the information about the repository.
+* After that, I created four routes, one for the _index_ page where a form with two input fields, namely _owner_ and _repository_,  one for creating a worker job where the main _issues_ fetching thing happens, another for checking the _status_ of the completion of the job and the last for actually displaying the data to the user.
+* When the relevant information is entered, for example, owner as _smartystreets_ and repository as _goconvey_, the form data is then directed to a _/issues_ API which does the job of calling the actual Github API for fetching the information about the repository by submitting the job to a RabbitMQ queue. This particular job is handled by a background worker which runs as a separate process and it fetches the _job_ to be performed from the RabbitMQ queue.
+* To store the data which can be later fetched by the client side, I am using Redis. 
+* As some requests take a lot of time process and the request gets stuck, the client sends a request to the server at an interval of 5 seconds to see if the job has been completed or not. If it is done, the client routes the user to the display page where all the results are displayed.
 
 ### Areas of Improvement
 
-* Since I am using a simple github client context, I am only entitled to a certain number of API calls in a given period of time. If the number of calls to the Github API is more than the intended number, we will not get any response because of _rate limits_ on the API.
-* To mitigate above situtation above,the client needs to be authenticated every time an API call is made.
-* However, even with a simple client context, we can make more number of calls in a given period of time, provided we using _caching_ mechanism for storing information that we know wouldn't change in the next couple of days, like we can store the information about _issues opened more than 7 days ago_ in _redis_ cache and put a timeout for clearing the cache every 7 days.
 * I did not particular follow TDD which I should have, but intend to write tests for all the functionalities given more time.
 * Also the UI is pretty basic and not very intuitive.
 * A *Makefile* would be nice to have as it would ease the setup of project on any computer, thereby supporting the concept of *automation*.
-
-### Caveat
-
-Gihub considers *pull requests* also as issues, so when the _issues_ are displayed, you will find the _issues_ containing both the number of  actual _issues_ and _pull requests_.
+* There is no mechanism present to prevent a large number of requests from any user, which might lead to a server crash as the server is not optimized to handle a large number of requests.
+* Implement caching of _issues_ data for a small period of time which would actually save time and resources to fetch the resources from Github.
+* Limit the usage of this service by allowing only authenticated clients to make requests and fix a quota for them, so that the API does not get abused.
+* Optimize the server to handle a large number of requests and also not accept requests if there is an overloading of requests to it.
 
 **That's all, folks! :D**
