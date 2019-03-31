@@ -10,12 +10,14 @@ import (
 	"github.com/radius_agents_assignment/github_project_issues/redisclient"
 )
 
+// publisher publishes a job to the background worker to process
 func publisher(repoinfo []byte) {
 	if err := queue.Publish("github_service_queue", repoinfo); err != nil {
 		panic(err)
 	}
 }
 
+// statusChecker checks the status of a given task in redis
 func statusChecker(owner string, repository string) bool {
 	rc := GetRedisConnection()
 	data, err := rc.Get(owner + repository)
@@ -30,6 +32,7 @@ func statusChecker(owner string, repository string) bool {
 	return true
 }
 
+// getIssuesData returns the processed data from redis for a particular owner and repository
 func getIssuesData(owner string, repository string) *domain.IssuesData {
 	rc := GetRedisConnection()
 	data, err := rc.Get(owner + repository)
@@ -41,6 +44,7 @@ func getIssuesData(owner string, repository string) *domain.IssuesData {
 	return &issuesData
 }
 
+// GetRedisConnection returns a redis client with a connection to the redis pool
 func GetRedisConnection() *redisclient.RedisClient {
 	redisHostURL := os.Getenv("REDIS_URL")
 	if redisHostURL == "" {

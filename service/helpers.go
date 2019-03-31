@@ -45,6 +45,7 @@ func getIssueListByRepoOptions(daysAgo int) *github.IssueListByRepoOptions {
 	return options
 }
 
+// filterIssues returns issues that are not pull requests
 func filterIssues(issues []*github.Issue) []*github.Issue {
 	var filteredIssues []*github.Issue
 	for _, v := range issues {

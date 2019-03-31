@@ -5,13 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/radius_agents_assignment/github_project_issues/redisclient"
-
 	"github.com/radius_agents_assignment/github_project_issues/queue"
 	"github.com/radius_agents_assignment/github_project_issues/service"
 )
-
-var RedisClient redisclient.RedisClient
 
 // StartWorker starts the Go worker process for making API calls on behalf of the web application
 func StartWorker() {
@@ -38,6 +34,7 @@ func StartWorker() {
 
 			repoInfoDataBytes, _ = json.Marshal(repoInfo)
 
+			// Push the data to redis after job has been completed
 			if err := rc.Set(repoInfo.Owner+repoInfo.Repository, repoInfoDataBytes); err != nil {
 				log.Fatalf("Error Encountered while storing data in Redis: %v", err)
 			}

@@ -12,16 +12,19 @@ import (
 	"github.com/gomodule/redigo/redis"
 )
 
+// RedisClient struct which holds a pointer to the redis pool
 type RedisClient struct {
 	Pool *redis.Pool
 }
 
+// Init initializes a connection to the redis pool
 func (rc *RedisClient) Init(redisHost string) *RedisClient {
 	rc.Pool = newPool(redisHost)
 	rc.cleanupHook()
 	return rc
 }
 
+// cleanupHook ends the connection to the redis pool on getting a shutdown signal
 func (rc *RedisClient) cleanupHook() {
 
 	c := make(chan os.Signal, 1)
@@ -35,6 +38,7 @@ func (rc *RedisClient) cleanupHook() {
 	}()
 }
 
+// newPool returns a pool of redis connection
 func newPool(server string) *redis.Pool {
 
 	u, err := url.Parse(server)
@@ -76,6 +80,7 @@ func newPool(server string) *redis.Pool {
 	}
 }
 
+// Ping tests to see if the connection to a redis host works or not
 func (rc *RedisClient) Ping() error {
 
 	conn := rc.Pool.Get()
@@ -88,6 +93,7 @@ func (rc *RedisClient) Ping() error {
 	return nil
 }
 
+// Get returns the data for a particular key
 func (rc *RedisClient) Get(key string) ([]byte, error) {
 
 	conn := rc.Pool.Get()
@@ -100,6 +106,7 @@ func (rc *RedisClient) Get(key string) ([]byte, error) {
 	return data, err
 }
 
+// Set sets the data for a given key
 func (rc *RedisClient) Set(key string, value []byte) error {
 
 	conn := rc.Pool.Get()
@@ -116,6 +123,7 @@ func (rc *RedisClient) Set(key string, value []byte) error {
 	return err
 }
 
+// Exists check if a key exists in redis or not
 func (rc *RedisClient) Exists(key string) (bool, error) {
 
 	conn := rc.Pool.Get()
@@ -128,6 +136,7 @@ func (rc *RedisClient) Exists(key string) (bool, error) {
 	return ok, err
 }
 
+// Delete removes the key along with the data held by that key
 func (rc *RedisClient) Delete(key string) error {
 
 	conn := rc.Pool.Get()
